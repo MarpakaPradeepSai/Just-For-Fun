@@ -33,6 +33,3 @@ if st.button("Analyze"):
             st.write("No entities found.")
     else:
         st.warning("Please enter some text to analyze.")
-
-# Footer
-st.write("Built with Streamlit and spaCy en_core_web_trf")
