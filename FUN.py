@@ -1,24 +1,30 @@
 import streamlit as st
 import spacy
+from spacy import displacy
 
-# Load the en_core_web_trf model
-nlp = spacy.load("en_core_web_trf")
+@st.cache_resource
+def load_model():
+    return spacy.load("en_core_web_trf")
 
-# Streamlit app
-st.title("NLP with en_core_web_trf")
+nlp = load_model()
 
-# Get user input
-text = st.text_area("Enter some text:", height=200)
+st.title("NLP Analysis with en_core_web_trf")
+st.write("Enter text below to analyze with spaCy's transformer model")
+
+text = st.text_area("Input Text", height=200)
 
 if st.button("Analyze"):
-    # Process the text using the en_core_web_trf model
-    doc = nlp(text)
-
-    # Display the results
-    st.subheader("Named Entities:")
-    for ent in doc.ents:
-        st.write(f"{ent.text} ({ent.label_})")
-
-    st.subheader("Part-of-Speech Tags:")
-    for token in doc:
-        st.write(f"{token.text}: {token.pos_}")
+    if text.strip():
+        doc = nlp(text)
+        
+        # Display entities
+        st.header("Named Entities")
+        entities = [(ent.text, ent.label_) for ent in doc.ents]
+        st.table(entities)
+        
+        # Display dependency parse visualization
+        st.header("Text Analysis")
+        html = displacy.render(doc, style="ent")
+        st.markdown(html, unsafe_allow_html=True)
+    else:
+        st.warning("Please enter some text to analyze")
