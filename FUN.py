@@ -1,25 +1,18 @@
-import spacy
 import streamlit as st
+import spacy
 
-# Load the transformer model
+# Load the pre-trained model
 try:
     nlp = spacy.load("en_core_web_trf")
 except OSError:
-    st.error("Model not found. Please run: python -m spacy download en_core_web_trf")
+    st.error("Model 'en_core_web_trf' not found. Ensure it is installed via requirements.txt.")
     st.stop()
 
-st.title("Transformer NER with spaCy")
-st.write("Enter text to extract named entities using the en_core_web_trf model")
+st.title("NER with en_core_web_trf")
+text = st.text_area("Enter text to analyze:")
 
-text = st.text_area("Input Text", height=200)
-if st.button("Process"):
-    if text.strip():
-        doc = nlp(text)
-        st.subheader("Named Entities")
-        entities = [(ent.text, ent.label_) for ent in doc.ents]
-        if entities:
-            st.table(entities)
-        else:
-            st.write("No entities found")
-    else:
-        st.warning("Please enter some text")
+if text:
+    doc = nlp(text)
+    entities = [(ent.text, ent.label_) for ent in doc.ents]
+    st.write("### Detected Entities:")
+    st.table(entities)
