@@ -1,30 +1,33 @@
 import streamlit as st
 import spacy
-from spacy import displacy
 
-@st.cache_resource
+# Function to load the spacy model (ensure it's downloaded)
+@st.cache_resource  # Use st.cache_resource for efficient model loading
 def load_model():
-    return spacy.load("en_core_web_trf")
+    try:
+        nlp = spacy.load("en_core_web_trf")
+        return nlp
+    except OSError:
+        st.error("It seems like 'en_core_web_trf' is not downloaded. Please run: `python -m spacy download en_core_web_trf` in your terminal and restart the app.")
+        return None
 
+# Load the spaCy model
 nlp = load_model()
 
-st.title("NLP Analysis with en_core_web_trf")
-st.write("Enter text below to analyze with spaCy's transformer model")
+st.title("spaCy en_core_web_trf in Streamlit")
 
-text = st.text_area("Input Text", height=200)
+user_input = st.text_area("Enter text here:", "This is an example sentence to analyze.")
 
-if st.button("Analyze"):
-    if text.strip():
-        doc = nlp(text)
-        
-        # Display entities
-        st.header("Named Entities")
-        entities = [(ent.text, ent.label_) for ent in doc.ents]
-        st.table(entities)
-        
-        # Display dependency parse visualization
-        st.header("Text Analysis")
-        html = displacy.render(doc, style="ent")
-        st.markdown(html, unsafe_allow_html=True)
+if nlp is not None and user_input:
+    doc = nlp(user_input)
+
+    st.header("Named Entities:")
+    if doc.ents:
+        for ent in doc.ents:
+            st.write(f"- **{ent.text}**:  *{ent.label_}*")
     else:
-        st.warning("Please enter some text to analyze")
+        st.write("No named entities found in the text.")
+
+    st.header("Sentence Analysis (Example - just sentences):")
+    for sent in doc.sents:
+        st.write(sent.text)
