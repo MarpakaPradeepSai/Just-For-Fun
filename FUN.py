@@ -1,26 +1,25 @@
-import streamlit as st
 import spacy
-import subprocess
+import streamlit as st
 
-# Function to download the model if it's not already downloaded
-def download_model(model_name):
-    try:
-        spacy.load(model_name)
-    except OSError:
-        subprocess.run(["python", "-m", "spacy", "download", model_name])
+# Load the transformer model
+try:
+    nlp = spacy.load("en_core_web_trf")
+except OSError:
+    st.error("Model not found. Please run: python -m spacy download en_core_web_trf")
+    st.stop()
 
-# Download the model
-download_model("en_core_web_trf")
+st.title("Transformer NER with spaCy")
+st.write("Enter text to extract named entities using the en_core_web_trf model")
 
-# Load the model
-nlp = spacy.load("en_core_web_trf")
-
-# Streamlit app
-st.title("Named Entity Recognition with en_core_web_trf")
-
-text = st.text_area("Enter your text here", "Enter text here")
-
-if text != "Enter text here":
-    doc = nlp(text)
-    entities = [(ent.text, ent.label_) for ent in doc.ents]
-    st.write(entities)
+text = st.text_area("Input Text", height=200)
+if st.button("Process"):
+    if text.strip():
+        doc = nlp(text)
+        st.subheader("Named Entities")
+        entities = [(ent.text, ent.label_) for ent in doc.ents]
+        if entities:
+            st.table(entities)
+        else:
+            st.write("No entities found")
+    else:
+        st.warning("Please enter some text")
