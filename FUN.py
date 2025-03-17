@@ -15,7 +15,7 @@ st.title("NLP with en_core_web_trf Model")
 st.write("Enter text to analyze using spaCy's en_core_web_trf model.")
 
 # Text input
-user_input = st.text_area("Input Text", "Type your text here...")
+user_input = st.text_area("Input Text")
 
 # Process the text when the button is clicked
 if st.button("Analyze"):
@@ -31,11 +31,6 @@ if st.button("Analyze"):
                 st.write(f"Entity: {entity}, Label: {label}")
         else:
             st.write("No entities found.")
-
-        st.subheader("Tokens and Part-of-Speech Tags")
-        tokens = [(token.text, token.pos_) for token in doc]
-        for token, pos in tokens:
-            st.write(f"Token: {token}, POS: {pos}")
     else:
         st.warning("Please enter some text to analyze.")
 
